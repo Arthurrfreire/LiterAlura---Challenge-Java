@@ -7,9 +7,12 @@ public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String titulo;
     private String idioma;
-    private Integer downloads;
+
+    @Column(name = "numero_downloads", nullable = false)
+    private Integer downloads; // Alinhado com a coluna "numero_downloads"
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Autor autor;

@@ -19,22 +19,33 @@ public class GutendexService {
     public Livro buscarLivroPorTitulo(String titulo) {
         String url = "https://gutendex.com/books?search=" + titulo;
 
-        Map response = restTemplate.getForObject(url, Map.class);
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
+        // Fazendo a requisição para a API Gutendex
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
 
-        if (results.isEmpty()) {
+        if (response == null || !response.containsKey("results")) {
+            throw new RuntimeException("Erro ao consultar a API Gutendex.");
+        }
+
+        List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
+        if (results == null || results.isEmpty()) {
             throw new RuntimeException("Livro não encontrado na API.");
         }
 
         Map<String, Object> livroData = results.get(0);
+
+        // Processa os dados para criar a entidade Livro
         Livro livro = new Livro();
         livro.setTitulo((String) livroData.get("title"));
         livro.setIdioma(((List<String>) livroData.get("languages")).get(0));
-        livro.setDownloads((Integer) livroData.get("download_count"));
+        livro.setDownloads(((Number) livroData.get("download_count")).intValue());
 
+        // Processa o autor
         Map<String, Object> autorData = ((List<Map<String, Object>>) livroData.get("authors")).get(0);
         Autor autor = new Autor();
         autor.setNome((String) autorData.get("name"));
+        autor.setAnoNascimento((Integer) autorData.get("birth_year"));
+        autor.setAnoFalecimento((Integer) autorData.get("death_year"));
+
         livro.setAutor(autor);
 
         return livro;

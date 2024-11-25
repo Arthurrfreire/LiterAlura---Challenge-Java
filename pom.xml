@@ -42,7 +42,7 @@
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>
 			<artifactId>dotenv-java</artifactId>
-			<version>2.2.4</version>
+			<version>3.0.0</version>
 		</dependency>
 
 		<!-- Testing Dependencies -->
@@ -59,7 +59,6 @@
 			<url>https://jitpack.io</url>
 		</repository>
 	</repositories>
-
 
 	<build>
 		<plugins>

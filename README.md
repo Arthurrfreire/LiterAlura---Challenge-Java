@@ -102,7 +102,7 @@ Além disso, configure as seguintes variáveis de ambiente:
 - Application:
   - `LiterAluraApplication.java`
    
-Testes ✅
+## Testes ✅
 
 Para executar os testes:
 

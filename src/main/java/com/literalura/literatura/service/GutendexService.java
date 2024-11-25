@@ -1,38 +1,42 @@
 package com.literalura.literatura.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.literalura.literatura.model.Autor;
+import com.literalura.literatura.model.Livro;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class GutendexService {
+    private final RestTemplate restTemplate;
 
-    private final HttpClient client = HttpClient.newHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public GutendexService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-    public Map<String, Object> buscarLivroPorTitulo(String titulo) {
-        try {
-            String url = "https://gutendex.com/books?search=" + titulo;
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .build();
+    public Livro buscarLivroPorTitulo(String titulo) {
+        String url = "https://gutendex.com/books?search=" + titulo;
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            JsonNode jsonNode = objectMapper.readTree(response.body());
+        Map response = restTemplate.getForObject(url, Map.class);
+        List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
 
-            // Converter JsonNode para Map
-            return objectMapper.convertValue(jsonNode, Map.class);
-
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Erro ao buscar livro por título: " + e.getMessage(), e);
+        if (results.isEmpty()) {
+            throw new RuntimeException("Livro não encontrado na API.");
         }
+
+        Map<String, Object> livroData = results.get(0);
+        Livro livro = new Livro();
+        livro.setTitulo((String) livroData.get("title"));
+        livro.setIdioma(((List<String>) livroData.get("languages")).get(0));
+        livro.setDownloads((Integer) livroData.get("download_count"));
+
+        Map<String, Object> autorData = ((List<Map<String, Object>>) livroData.get("authors")).get(0);
+        Autor autor = new Autor();
+        autor.setNome((String) autorData.get("name"));
+        livro.setAutor(autor);
+
+        return livro;
     }
 }

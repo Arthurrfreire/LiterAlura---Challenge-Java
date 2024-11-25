@@ -3,24 +3,16 @@ package com.literalura.literatura.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "livro") // Garante que o Hibernate mapeie para a tabela correta
 public class Livro {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String titulo;
-
-    @Column(nullable = false)
-    private String autor;
-
-    @Column(nullable = false)
     private String idioma;
+    private Integer downloads;
 
-    @Column(name = "numero_downloads", nullable = false)
-    private int numeroDownloads;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Autor autor;
 
     // Getters e Setters
     public Long getId() {
@@ -39,14 +31,6 @@ public class Livro {
         this.titulo = titulo;
     }
 
-    public String getAutor() {
-        return autor;
-    }
-
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
-
     public String getIdioma() {
         return idioma;
     }
@@ -55,11 +39,19 @@ public class Livro {
         this.idioma = idioma;
     }
 
-    public int getNumeroDownloads() {
-        return numeroDownloads;
+    public Integer getDownloads() {
+        return downloads;
     }
 
-    public void setNumeroDownloads(int numeroDownloads) {
-        this.numeroDownloads = numeroDownloads;
+    public void setDownloads(Integer downloads) {
+        this.downloads = downloads;
+    }
+
+    public Autor getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Autor autor) {
+        this.autor = autor;
     }
 }

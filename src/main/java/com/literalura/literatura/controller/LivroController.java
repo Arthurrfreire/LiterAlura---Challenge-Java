@@ -1,21 +1,21 @@
-package com.literalura.literatura.controller;
+import com.literalura.literatura.model.Livro;
+import com.literalura.literatura.service.LivroService;
+import org.springframework.web.bind.annotation.*;
 
-import com.literalura.literatura.service.GutendexService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import java.util.List;
 
 @RestController
+@RequestMapping("/livros")
 public class LivroController {
 
-    @Autowired
-    private GutendexService gutendexService;
+    private final LivroService livroService;
 
-    @GetMapping("/livros/buscar")
-    public Map<String, Object> buscarLivro(@RequestParam String titulo) {
-        return gutendexService.buscarLivroPorTitulo(titulo);
+    public LivroController(LivroService livroService) {
+        this.livroService = livroService;
+    }
+
+    @GetMapping("/idioma/{idioma}")
+    public List<Livro> listarLivrosPorIdioma(@PathVariable String idioma) {
+        return livroService.listarLivrosPorIdioma(idioma);
     }
 }

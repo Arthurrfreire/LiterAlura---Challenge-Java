@@ -1,6 +1,10 @@
 package com.literalura.literatura;
 
+import com.literalura.literatura.service.AutorService;
 import com.literalura.literatura.service.LivroService;
+import com.literalura.literatura.service.GutendexService;
+import com.literalura.literatura.model.Livro;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +18,12 @@ public class LiterAluraApplication implements CommandLineRunner {
 	@Autowired
 	private LivroService livroService;
 
+	@Autowired
+	private AutorService autorService;
+
+	@Autowired
+	private GutendexService gutendexService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(LiterAluraApplication.class, args);
 	}
@@ -21,42 +31,54 @@ public class LiterAluraApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 		Scanner scanner = new Scanner(System.in);
-		int opcao;
 
-		do {
-			System.out.println("Escolha o número de sua opção:");
-			System.out.println("1- Buscar livro pelo título");
+		while (true) {
+			System.out.println("Escolha uma opção:");
+			System.out.println("1- Buscar e salvar livro");
 			System.out.println("2- Listar livros registrados");
 			System.out.println("3- Listar autores registrados");
-			System.out.println("4- Listar autores vivos em um determinado ano");
-			System.out.println("5- Listar livros em um determinado idioma");
 			System.out.println("0- Sair");
 
-			opcao = scanner.nextInt();
+			int opcao = scanner.nextInt();
 			scanner.nextLine(); // Consumir a quebra de linha
 
 			switch (opcao) {
-				case 1 -> {
-					System.out.print("Digite o título do livro: ");
+				case 1:
+					System.out.println("Digite o título do livro:");
 					String titulo = scanner.nextLine();
-					livroService.buscarLivroPorTitulo(titulo);
-				}
-				case 2 -> livroService.listarLivrosRegistrados();
-				case 3 -> livroService.listarAutoresRegistrados();
-				case 4 -> {
-					System.out.print("Digite o ano: ");
-					int ano = scanner.nextInt();
-					scanner.nextLine(); // Consumir a quebra de linha
-					livroService.listarAutoresVivosPorAno(ano);
-				}
-				case 5 -> {
-					System.out.print("Digite o idioma (ex: pt, en): ");
-					String idioma = scanner.nextLine();
-					livroService.listarLivrosPorIdioma(idioma);
-				}
-				case 0 -> System.out.println("Saindo...");
-				default -> System.out.println("Opção inválida.");
+					Livro livro = gutendexService.buscarLivroPorTitulo(titulo);
+					livroService.salvarLivro(livro);
+					System.out.println("Livro salvo com sucesso!");
+					break;
+
+				case 2:
+					System.out.println("Lista de livros registrados:");
+					livroService.listarLivros().forEach(livroRegistrado -> {
+						System.out.println("Título: " + livroRegistrado.getTitulo());
+						System.out.println("Autor: " + livroRegistrado.getAutor().getNome());
+						System.out.println("Idioma: " + livroRegistrado.getIdioma());
+						System.out.println("Downloads: " + livroRegistrado.getDownloads());
+						System.out.println("---");
+					});
+					break;
+
+				case 3:
+					System.out.println("Lista de autores registrados:");
+					autorService.listarAutoresRegistrados().forEach(autor -> {
+						System.out.println("Nome: " + autor.getNome());
+						System.out.println("Ano de nascimento: " + autor.getAnoNascimento());
+						System.out.println("Ano de falecimento: " + (autor.getAnoFalecimento() != null ? autor.getAnoFalecimento() : "Vivo"));
+						System.out.println("---");
+					});
+					break;
+
+				case 0:
+					System.out.println("Saindo...");
+					return;
+
+				default:
+					System.out.println("Opção inválida!");
 			}
-		} while (opcao != 0);
+		}
 	}
 }

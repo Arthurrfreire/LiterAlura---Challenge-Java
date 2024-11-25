@@ -1,17 +1,19 @@
 package com.literalura.literatura.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 public class Autor {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nome;
-    private int anoNascimento;
-    private Integer anoFalecimento; // Pode ser null se o autor ainda estiver vivo
+    private Integer anoNascimento;
+    private Integer anoFalecimento;
+
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    private List<Livro> livros;
 
     // Getters e Setters
     public Long getId() {
@@ -30,11 +32,11 @@ public class Autor {
         this.nome = nome;
     }
 
-    public int getAnoNascimento() {
+    public Integer getAnoNascimento() {
         return anoNascimento;
     }
 
-    public void setAnoNascimento(int anoNascimento) {
+    public void setAnoNascimento(Integer anoNascimento) {
         this.anoNascimento = anoNascimento;
     }
 
@@ -44,5 +46,13 @@ public class Autor {
 
     public void setAnoFalecimento(Integer anoFalecimento) {
         this.anoFalecimento = anoFalecimento;
+    }
+
+    public List<Livro> getLivros() {
+        return livros;
+    }
+
+    public void setLivros(List<Livro> livros) {
+        this.livros = livros;
     }
 }
